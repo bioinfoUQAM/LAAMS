@@ -1,6 +1,6 @@
 # Load the dictionary back from the pickle file.
 import pickle
-#import pandas as pd
+import pandas as pd
 
 # create a list of all the files we will work with
 file_paths = ["./input/cms_Animals.cpickle", "./input/cms_Herds.cpickle", "./input/cms_Milkings.cpickle"]
@@ -12,13 +12,11 @@ for i, file in enumerate(file_paths):
     
     print("Reading File: ", file)
     headers = list(datasets[i])
-    print("Categories in cms file: ", headers)    
-    
     
     # print an overview of the dataset in the terminal 
     print("Loaded Dataset: " + file)
     print(datasets[i].head())
-    print(datasets)
+
     
     
     
