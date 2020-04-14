@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-
 # Create a list of all the files we will work with
 input_path = "./input/"
 file_paths = ["cms_Animals.cpickle", "cms_Herds.cpickle", "cms_Milkings.cpickle"]
@@ -21,6 +20,7 @@ datasets = []
 
 # Load each dataset in the folder and save to a pandas dataframe (df) 
 for i, file in enumerate(file_paths): 
+    print(file)
     datasets.append(pickle.load(open(input_path + file, "rb")))
     
     # Print an overview of the dataset in the terminal 
