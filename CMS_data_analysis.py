@@ -12,7 +12,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 # Create a list of all the files we will work with
 input_path = "./input/"
 file_paths = ["cms_Animals.cpickle", "cms_Herds.cpickle", "cms_Milkings.cpickle"]
@@ -53,10 +52,10 @@ print("Correlations: ", animal1.corr())
 fig = plt.figure(figsize = (12, 12))
 ax = fig.add_subplot(111)
 
-
 # Add labels to the ticks and do a bit of cleaning up
 ax.set_yticklabels(list(animal1.columns))
 ax.set_xticklabels(list(animal1.columns))
+
 # Format the colorbar and show the final plot 
 cax = ax.matshow(animal1.corr(), cmap='RdBu', vmin=-1, vmax=1)
 fig.colorbar(cax)

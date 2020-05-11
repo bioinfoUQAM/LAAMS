@@ -12,6 +12,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from datetime import datetime
+import time
 
 # Create a list of all the files we will work with
 input_path = "./input/cms_Extracts_07Apr2020/"
@@ -39,11 +41,65 @@ herds = herds.reindex(columns =["id","hrd_id", "herd_prv_cd", "exported_date", "
 print("Loaded Herds Dataset: ")
 print(herds.head())
 
-# Create plots of the time series data 
+""" Create plots of the time series data """
+# Calculate the duration between the start date and end date 
+herds["duration (end-start)"] = herds["export_end_date"]-herds["export_start_date"]
+
+print(herds.describe())
 
 
 
+"""
+# create a stem plot for a single cow
+dates = herds["exported_date"]
+dates_cow1 = list(herds[date_columns].iloc[0])
+print(dates_cow1)
 
+
+# Choose some nice levels
+levels = np.tile([ 7, 5, 3, 1],
+                 int(np.ceil(len(dates_cow1)/6)))[:len(dates_cow1)]
+
+
+# Create figure and plot a stem plot with the date
+fig, ax = plt.subplots(figsize=(8.8, 4), constrained_layout=True)
+ax.set(title="Observed Milking pattern Dates")
+
+markerline, stemline, baseline = ax.stem(dates_cow1, levels,
+                                         linefmt="C3-", basefmt="k-",
+                                         use_line_collection=True)
+
+plt.show() 
+"""
+
+
+"""
+plt.setp(markerline, mec="k", mfc="w", zorder=3)
+
+# Shift the markers to the baseline by replacing the y-data by zeros.
+markerline.set_ydata(np.zeros(len(dates_cow1)))
+
+
+# annotate lines
+vert = np.array(['top', 'bottom'])[(levels > 0).astype(int)]
+for d, l, r, va in zip(dates_cow1, levels, date_columns, vert):
+    ax.annotate(r, xy=(d, l), xytext=(-3, np.sign(l)*3),
+              textcoords="offset points", va=va, ha="right")
+
+# format xaxis with 4 month intervals
+ax.get_xaxis().set_major_locator(mdates.MonthLocator(interval=4))
+ax.get_xaxis().set_major_formatter(mdates.DateFormatter("%b %Y"))
+plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+
+
+# remove y axis and spines
+ax.get_yaxis().set_visible(False)
+for spine in ["left", "top", "right"]:
+    ax.spines[spine].set_visible(False)
+
+ax.margins(y=0.1)
+plt.show()
+"""
 
 """
 # Find the region in the df corresponding to the first cow & make sure that 
