@@ -42,20 +42,6 @@ datasets["cms_Herds"].rename(columns={"id": "cch_id", "crtn_date": "herds_crtn_d
 datasets["cms_Start_Lactations"].rename(columns={"start_date": "lactation_start_date"}, inplace=True)  
 datasets["cms_End_Lactations"].rename(columns={"end_date": "lactation_end_date"}, inplace=True)  
 
-""" Notes de René
-Le mieux est de commencer par ccc_cms_herds, en triant sur hrd_prv_cd, hrd_id, 
-id (primary key) et export_date.  Regarde comment se comportent les export_start_date, 
-export_end_date et crtn_date. Ne te préoccupe pas des duplicatas pour l’instant. 
-Le but est de te familiariser avec le processus d’acquisition et stockage.
-
-Ensuite ccc_cms_animals. Fais le lien avec ccc_cms_herds via cch_id (foreign key), 
-et fais un tri sur par exemple, cch.hrd_prv_cd, cch.hrd_id, anm_ident, visible_id_no_6, 
-birth_date, cch.crtn_date, cca.crtn_date. Encore une fois, ne te préoccupe 
-pas trop des duplicatas pour l’instant.
-
-Ensuite tu pourras attaquer ccc_cms_milkings, et la tu devras te préoccuper des duplicatas!
-
-"""
 # Drop the columns we don't need 
 datasets["cms_Animals"].drop(["last_modfd_by", "last_modfd_date"], inplace=True, axis = 1)       
 datasets["cms_Breeding_Dates"].drop(["last_modfd_by", "last_modfd_date", "crtn_date"], inplace=True, axis = 1)
