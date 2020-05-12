@@ -64,7 +64,7 @@ datasets["cms_Start_Lactations"].drop(["last_modfd_by", "last_modfd_date", "crtn
 datasets["cms_Herds"].drop(["last_modfd_by", "last_modfd_date", "cms_software_code", 
                     "cms_software_version", "installation_code", "interface_code", "manufacturer_code"], inplace=True, axis = 1) 
 datasets["cms_Milkings"].drop(["milkng_code", "lr_scc", "lf_scc", "rf_scc", 
-              "rr_scc", "lactose", "urea", "crtn_date", "last_modfd_by", "last_modfd_date"], inplace=True, axis =1)       
+              "rr_scc", "lactose", "urea", "last_modfd_by", "last_modfd_date"], inplace=True, axis =1)       
 
 # Start with cms_Herds
 # Rearrange the columns and sort the values
@@ -77,11 +77,16 @@ datasets["cms_Animals"] = datasets["cms_Animals"][["cca_id", "cch_id", "anm_iden
 result = pd.merge(datasets["cms_Animals"], datasets["cms_Herds"][["cch_id", "hrd_id", "hrd_prv_cd", "export_start_date", "exported_date", "export_end_date", "herds_crtn_date"]], on="cch_id", how="outer")
 
 # remove the keys since we no longer need them
-result.drop(["cca_id", "cch_id"], axis=1, inplace=True)
+#result.drop(["cca_id", "cch_id"], axis=1, inplace=True)
 
 # Sort all the final values
 result.sort_values(by=["anm_ident", "visible_id_no_6", "birth_date","hrd_prv_cd", "hrd_id", "animals_crtn_date", "herds_crtn_date"])
-result = result[["anm_ident", "visible_id_no_6", "birth_date","hrd_prv_cd", "hrd_id", "export_start_date", "exported_date", "export_end_date", "animals_crtn_date", "herds_crtn_date"]]
+result = result[["cca_id", "anm_ident", "visible_id_no_6", "birth_date","hrd_prv_cd", "hrd_id", "export_start_date", "exported_date", "export_end_date", "animals_crtn_date", "herds_crtn_date"]]
+
+
+result = pd.merge(result, datasets["cms_Milkings"][["cca_id", "milkng_date", "milk_wgt", "milkng_temp", "milk_flow_avg", "milk_flow_max", "fat_pcnt", "prot_pcnt", "scc", "crtn_date" ]], 
+                  on="cca_id", how="outer")
+result.sort_values(by=["anm_ident", "visible_id_no_6", "birth_date","hrd_prv_cd", "hrd_id","milkng_date", "animals_crtn_date", "herds_crtn_date"])
 
 """
 # Merge the datasets to create a final one
