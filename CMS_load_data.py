@@ -39,11 +39,10 @@ for i, file in enumerate(os.listdir(input_path)):
 
         # Store all the final dataframes in a dictionary
         datasets[file.split(".")[0]] = df
-        # Print an overview of the dataset in the terminal
  
-
+    
 # Next, start working on the combined dataset using the included files
-
+        
 # Rename some of the columns for clarity and to be able to merge later
 datasets["cms_Animals"].rename(columns={"id": "cca_id", "crtn_date": "animals_crtn_date"}, inplace=True)
 datasets["cms_Herds"].rename(columns={"id": "cch_id", "crtn_date": "herds_crtn_date"}, inplace=True)
@@ -81,8 +80,6 @@ result = pd.merge(result, datasets["cms_Milkings"][["cca_id", "milkng_date", "mi
 result = pd.merge(result, datasets["cms_Start_Lactations"][["cca_id","lact_no", "lactation_start_date"]], on ="cca_id", how="outer")
 result = pd.merge(result, datasets["cms_End_Lactations"][["cca_id","lactation_end_date"]], on ="cca_id", how="outer")
 
-
-print(result.head())
 # Drop the cca id and visible id columns since we no longer need them anymore
 result.drop(["cca_id","visible_id_no_6"], inplace=True, axis=1)
 
@@ -91,8 +88,23 @@ result.sort_values(by=["anm_ident", "birth_date","hrd_prv_cd", "hrd_id","milkng_
 result = result[["anm_ident", "birth_date","hrd_prv_cd", "hrd_id", "export_start_date", "lact_no", "lactation_start_date", "lactation_end_date",
                  "exported_date", "export_end_date", "milkng_date", "milk_wgt", "milkng_temp", "milk_flow_avg", "milk_flow_max", "fat_pcnt", "prot_pcnt", "scc", "milkings_crtn_date","animals_crtn_date", "herds_crtn_date"]]
 
+
+# create months after birth (MAB)
+
+# Dropping the NA when there is no value on the current columns
+result= result.dropna(how="any",subset=["birth_date", "milkng_date"])
+print("After dropping the NA :", result.shape)
+
+#Creating custom columns for MaB, MaBint, seasons, profits
+result["MaB"]= (pd.to_datetime(result.milkng_date) - pd.to_datetime(result.birth_date)).astype('timedelta64[D]')/365.25*12
+result["MaBint"] = round(result.MaB)
+
+#convert the milking date to include the season that the milking was done 
+result["SPRI"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([4,5,6])
+result["SUMM"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([7,8,9])
+result["FALL"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([10,11,12])
+result["WINT"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([1,2,3])
+
 print("Final Dataframe")
 print(result.head())
-
-
 
