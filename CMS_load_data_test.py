@@ -40,7 +40,28 @@ for i, file in enumerate(os.listdir(input_path)):
         # Store all the final dataframes in a dictionary
         datasets[file.split(".")[0]] = df
  
-    
+"""
+clean up code using this:
+import pandas as pd
+
+df = pd.read_csv(
+    "groupby-data/airqual.csv",
+    parse_dates=[["Date", "Time"]],
+    na_values=[-200],
+    usecols=["Date", "Time", "CO(GT)", "T", "RH", "AH"]
+).rename(
+    columns={
+        "CO(GT)": "co",
+        "Date_Time": "tstamp",
+        "T": "temp_c",
+        "RH": "rel_hum",
+        "AH": "abs_hum",
+    }
+).set_index("tstamp")
+
+"""    
+
+
 # Next, start working on the combined dataset using the included files
         
 # Rename some of the columns for clarity and to be able to merge later
@@ -102,10 +123,64 @@ print("After dropping the NA :", result.shape)
 result["MaB"]= (pd.to_datetime(result.milkng_date) - pd.to_datetime(result.birth_date)).astype('timedelta64[D]')/365.25*12
 result["MaBint"] = round(result.MaB)
 
-print(result.head())
+#print(result.head())
 result["SPRI"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([4,5,6])
 result["SUMM"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([7,8,9])
 result["FALL"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([10,11,12])
 result["WINT"]=result.milkng_date.astype(str).str[5:7].astype(int).isin([1,2,3])
 
 
+print(result.head())
+
+subsample = result[["anm_ident", "milkng_date", "milk_wgt","scc", "MaB", "SPRI", "SUMM", "FALL", "WINT"]]
+print(subsample.head())
+pd.to_datetime(subsample["milkng_date"])
+new = subsample[["milk_wgt", "scc"]].groupby([subsample["anm_ident"], subsample['milkng_date'].dt.date]).milk_wgt.agg(['count','min','max','mean']).rename_axis(["ANM_IDENT", "Date"])
+new.index
+
+
+new.loc[('anm_0','mean')]
+new.iloc[0]
+
+# Create a simple plot of the correlations between the different variables
+"""
+for name in sorted(list((set(new.index.get_level_values(0))))): 
+    ("Cow ident: ", name)
+    new.loc[name].plot()
+    plt.legend(title = "Milkings", loc='upper right', labels = ["milking count", "minimum ", "maximum", "mean"])
+    plt.title("Milking Activity for " + name)
+    plt.ylabel("Weight (kg)")
+    plt.ylim(0, 30)
+    #plt.show()
+    plt.savefig('milking_'+name)
+    #format dates on x-axis 
+    
+"""
+
+
+
+
+"""
+#new.index = new.index.set_names(["ANM_IDENT", "Week", "Month", "Day"])
+#print(new.unstack())
+
+print(new.index[0])
+
+for state, frame in new:
+    print(f"First 2 entries for {state!r}")
+    print("------------------------")
+    print("State:", state)
+    print("Frame:", frame)
+    #print(frame.head(2), end="\n\n")
+
+#print(new.loc[new["count"]=="anm_0"])
+
+
+# playing around with Dataframe structures 
+#new2 = pd.MultiIndex.from_frame(new)
+#print(new2.columns)
+
+
+#(new.index.get_level_values)
+#new.unstack(level=0).plot(kind='bar', subplots=True, figsize=(15, 4))
+"""
