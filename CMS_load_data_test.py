@@ -8,7 +8,7 @@ Created on Thur Apr 2 16:07:40 2020
 """
 
 # import the necessary packages
-#import argparse
+# import argparse
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -39,6 +39,11 @@ for i, file in enumerate(os.listdir(input_path)):
 
         # Store all the final dataframes in a dictionary
         datasets[file.split(".")[0]] = df
+        
+        
+        
+        
+        
  
 """
 clean up code using this:
@@ -139,8 +144,14 @@ new = subsample[["milk_wgt", "scc"]].groupby([subsample["anm_ident"], subsample[
 new.index
 
 
-new.loc[('anm_0','mean')]
-new.iloc[0]
+new["count"].plot.hist(alpha=0.5)
+#new.iloc[0]
+plt.legend(title = "Milkings", loc='upper right', labels = ["milking count", "minimum ", "maximum", "mean"])
+plt.title("Milking Activity for " + "anm_0")
+plt.ylabel("Weight (kg)")
+
+
+
 
 # Create a simple plot of the correlations between the different variables
 """
