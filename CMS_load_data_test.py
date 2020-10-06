@@ -88,9 +88,13 @@ print("After dropping the NA :", result.shape)
 # Remove Duplicates 
 """TO DO """
 
+# Create a column for the date of milking 
+result["milkng_day"] = result["milkng_date"].dt.date
+
 # Creating custom columns for MaB, MaBint (integer value), seasons
 result["MaB"]= (pd.to_datetime(result.milkng_date) - pd.to_datetime(result.birth_date)).astype('timedelta64[D]')/365.25*12
 result["MaBint"] = round(result.MaB) 
+
 
 # Calculate the season by seperating the year into quarters 
 result["WINT"]= result.milkng_date.astype(str).str[5:7].astype(int).isin([1,2,3])
@@ -102,10 +106,36 @@ result["FALL"]= result.milkng_date.astype(str).str[5:7].astype(int).isin([10,11,
 print("Final Dataframe")
 print(result.head())
 
-anm_grp = result.groupby("scc")
-anm_0 = anm_grp.get_group('anm_0')
 
-print(anm_0)
+print("Grouping Data....")
+anm_group = result.groupby(["anm_ident"])
+anms = len(anm_group)
+
+"""
+for name, group in anm_group:
+    print("Name: ", name)
+    print("Group Items: ", group)
+    
+    # group the animal data by days next
+    days_group = group.groupby("milkng_day")
+    for day_name, day_group in days_group: 
+        # replace the missing somatic cell count with the value for that day
+        print(day_group["scc"].values)
+        
+        # remove the duplicate rows according to milking data
+        cow_day_data = days_group.get_group((day_name))
+        cow_day_data.drop_duplicates(subset=["milkng_date"])
+"""
+
+# Noticed something interesting while looping through the data, it seems as though
+# some cows have different somatic cell counts throughout the day. Ex: Cow 101, 
+        
+anm_100 = anm_group.get_group('anm_100')
+anm_101 = anm_group.get_group('anm_101')
+
+cow_day_data= anm_100.drop_duplicates(subset=["milkng_date", "milk_wgt", 
+                                              "milkng_temp", "milk_flow_avg", 
+                                              "milk_flow_max", "fat_pcnt", "prot_pcnt", "scc"])
 
 """
 subsample = result[["anm_ident", "milkng_date", "milk_wgt","scc", "MaB", "SPRI", "SUMM", "FALL", "WINT"]]
